@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'models/Berita.dart';
 
 class Album {
   final int userId;
@@ -18,6 +19,54 @@ class Album {
     );
   }
 }
+
+//membuat custom widget
+class TampilanKartu extends StatelessWidget{
+  TampilanKartu({Key key, this.id,this.userId,this.title}): super(key: key);
+
+  final String id;
+  final String userId;
+  final String title;
+
+  Widget build(BuildContext context){
+    return Container(
+      padding: EdgeInsets.all(2.0),
+      height: 100,
+      child: Card(
+        child: Column(
+          children: <Widget>[
+            Text("ID : $id"),
+            Text("User ID : $userId"),
+            Text("Title : $title")
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class WidgetBerita extends StatelessWidget{
+  WidgetBerita({Key key,this.title,this.urlToImage}): super(key: key);
+  final String title;
+  final String urlToImage;
+
+  Widget build(BuildContext context){
+    return Container(
+      padding: EdgeInsets.all(2.0),
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Image.network(urlToImage==null?"":urlToImage,height: 200, fit: BoxFit.fill,
+            ),
+            Text("Title : $title")
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 
 Future<Album> fetchAlbum() async {
@@ -49,6 +98,16 @@ Future<List<Album>> fetchAlbumList() async {
   }
 }
 
+Future<Berita> fetchBerita() async {
+  final response = await http.get("https://newsapi.org/v2/top-headlines?country=us&apiKey=b8a8521877174653b7f0a611d3cd753f");
+  if (response.statusCode == 200) {
+    var parsedData = json.decode(response.body);
+    return Berita.fromJson(parsedData);
+  } else {
+    throw Exception('Failed to load news');
+  }
+}
+
 
 class MenuPage extends StatefulWidget {
   MenuPage({Key key}) : super(key: key);
@@ -59,12 +118,14 @@ class MenuPage extends StatefulWidget {
 
 class _myMenuPageState extends State<MenuPage>{
   Future futureAlbumList;
+  Future<Berita> futureBerita;
   Future<Album> FutureAlbum;
 
   @override
   void initState()  {
     super.initState();
     futureAlbumList = fetchAlbumList();
+    futureBerita = fetchBerita();
   }
 
   @override
@@ -79,19 +140,14 @@ class _myMenuPageState extends State<MenuPage>{
         child: Padding(
           padding: EdgeInsets.all(10.0),
           child: FutureBuilder(
-            future: futureAlbumList,
+            future: futureBerita,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        color: Colors.grey,
-                      );
-                    },
-                    itemCount: snapshot.data.length,
+                return ListView.builder(
+                    itemCount: snapshot.data.articles.length,
                     itemBuilder: (context,index){
-                      Album album = snapshot.data[index];
-                      return Text(album.title);
+                      Articles artikel = snapshot.data.articles[index];
+                      return WidgetBerita(title: artikel.title,urlToImage: artikel.urlToImage);
                     }
                 );
               } else if (snapshot.hasError) {
