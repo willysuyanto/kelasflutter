@@ -98,8 +98,8 @@ Future<List<Album>> fetchAlbumList() async {
   }
 }
 
-Future<Berita> fetchBerita() async {
-  final response = await http.get("https://newsapi.org/v2/top-headlines?country=us&apiKey=b8a8521877174653b7f0a611d3cd753f");
+Future<Berita> fetchBerita(String countryID) async {
+  final response = await http.get("https://newsapi.org/v2/top-headlines?country=$countryID&apiKey=b8a8521877174653b7f0a611d3cd753f");
   if (response.statusCode == 200) {
     var parsedData = json.decode(response.body);
     return Berita.fromJson(parsedData);
@@ -117,6 +117,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _myMenuPageState extends State<MenuPage>{
+  String countryID = "id";
   Future futureAlbumList;
   Future<Berita> futureBerita;
   Future<Album> FutureAlbum;
@@ -125,7 +126,7 @@ class _myMenuPageState extends State<MenuPage>{
   void initState()  {
     super.initState();
     futureAlbumList = fetchAlbumList();
-    futureBerita = fetchBerita();
+    futureBerita = fetchBerita(countryID);
   }
 
   @override
