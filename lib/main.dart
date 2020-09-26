@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_course/MenuBaru.dart';
+import 'package:flutter_course/WebviewBerita.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/':(context)=>LoginPage(),
         '/home':(context) => MyStatefulWidget(),
-        '/halamanlain':(context) => MenuPage()
+        '/halamanlain':(context) => MenuPage(),
+        '/lihatberita':(context) => WebviewBerita(),
       },
     );
   }

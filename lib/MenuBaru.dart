@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_course/models/BeritaArguments.dart';
 import 'package:http/http.dart' as http;
 import 'models/Berita.dart';
 
@@ -46,21 +47,29 @@ class TampilanKartu extends StatelessWidget{
 }
 
 class WidgetBerita extends StatelessWidget{
-  WidgetBerita({Key key,this.title,this.urlToImage}): super(key: key);
+  WidgetBerita({Key key,this.title,this.urlToImage,this.url}): super(key: key);
   final String title;
   final String urlToImage;
+  final String url;
 
   Widget build(BuildContext context){
     return Container(
-      padding: EdgeInsets.all(2.0),
-      child: Card(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Image.network(urlToImage==null?"":urlToImage,height: 200, fit: BoxFit.fill,
-            ),
-            Text("Title : $title")
-          ],
+      width: 200,
+      child: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/lihatberita', arguments: BeritaArguments(title, url));
+          },
+        child: Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              FittedBox(
+                child:  Image.network(urlToImage==null?"":urlToImage),
+                fit: BoxFit.fill,
+              ),
+              Text("Title : $title")
+            ],
+          ),
         ),
       ),
     );
@@ -148,7 +157,7 @@ class _myMenuPageState extends State<MenuPage>{
                     itemCount: snapshot.data.articles.length,
                     itemBuilder: (context,index){
                       Articles artikel = snapshot.data.articles[index];
-                      return WidgetBerita(title: artikel.title,urlToImage: artikel.urlToImage);
+                      return WidgetBerita(title: artikel.title,urlToImage: artikel.urlToImage,url:artikel.url);
                     }
                 );
               } else if (snapshot.hasError) {
